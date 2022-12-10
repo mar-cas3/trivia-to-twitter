@@ -1,41 +1,17 @@
-/* This runs after a web page loads */
-let lasTriviaTime = undefined;
-// five minutes
-const tweetAllowance = 5 * 60 * 1000;
 let allowedToSee = false;
 
-const setLastTweetTime = () => {
-    lasTriviaTime = Date.now();
-}
 
 const hide = () => {
     const timeline = document.querySelector('[aria-label="Timeline: Your Home Timeline"]');
 
     if (timeline) {
         timeline.style.display =
-            (!allowedToSee || Date.now() - lasTriviaTime > tweetAllowance) ?
+            (!allowedToSee) ?
                 'none' : 'block';
     }
-
-    // document.querySelector('[data-testid="tweetButton"]')
-    //     ?.addEventListener('click', setLastTweetTime);
-    // document.querySelector('[data-testid="tweetButtonInline"]')
-    //     ?.addEventListener('click', setLastTweetTime);
-}
-function getVisitCountToday() {
-    if (localStorage['myBoost.lastVisitDate'] === currentDateString()) {
-        return parseInt(localStorage['myBoost.visitCount'] || '0');
-    }
-    return 0;
 }
 
-function updateVisitCounter() {
-    const count = getVisitCountToday();
-    localStorage['myBoost.lastVisitDate'] = currentDateString();
-    localStorage['myBoost.visitCount'] = count + 1;
-}
 
-updateVisitCounter();
 
 function addMutationObserver() {
     // Add a listener to detect when the "Trending" sidebar appears,
@@ -77,7 +53,10 @@ function replaceContent(e) {
 
 
     const generateTrivia = async () => {
-        const response = await fetch('https://opentdb.com/api.php?amount=3&difficulty=easy&type=multiple');
+        let question_num = 3;
+        let difficulty = 'easy'
+        let url = 'https://opentdb.com/api.php?amount=' + question_num + '&difficulty=' + difficulty + '&type=multiple'
+        const response = await fetch(url);
         const data = await response.json();
         questions = data["results"]
         // console.log(questions)
@@ -176,8 +155,8 @@ function replaceContent(e) {
             });
 
             alert("You got " + correct_answers + " out of " + total_question + " correct!")
-            if (correct_answers / total_question >= (2/3)) {
-                
+            if (correct_answers / total_question >= (2 / 3)) {
+
 
                 correct_radios.forEach((radio) => {
                     radio.parentElement.style.color = '#557153'
@@ -189,7 +168,7 @@ function replaceContent(e) {
 
                 setTimeout(hideTrivia, 2500);
                 allowedToSee = true
-            } 
+            }
         });
 
     };
@@ -207,11 +186,11 @@ function hideTrivia() {
 
 function decode(str) {
 
-let txt = document.createElement("textarea");
+    let txt = document.createElement("textarea");
 
-txt.innerHTML = str;
+    txt.innerHTML = str;
 
-return txt.value;
+    return txt.value;
 
 }
 
